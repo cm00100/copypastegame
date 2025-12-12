@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Copy & Paste Adventure Game</title>
+<style>
+    body {
+        font-family: 'Trebuchet MS', sans-serif;
+        background: #e6f4ff;
+        margin: 0; padding: 0;
+    }
+    header {
+        background: #1d7cd6;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    #game {
+        max-width: 800px;
+        margin: 20px auto;
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    .level {
+        display: none;
+        margin-bottom: 30px;
+    }
+    .active {
+        display: block;
+    }
+    .practice-box {
+        border: 3px dashed #1d7cd6;
+        background: #f0f8ff;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+    textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 2px solid #1d7cd6;
+    }
+    button {
+        background: #1d7cd6;
+        color: white;
+        padding: 10px 20px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    button:hover {
+        background: #155a9b;
+    }
+    #scoreBoard {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #155a9b;
+    }
+    .mascot {
+        font-size: 22px;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<header>🕹️ Copy & Paste Adventure Game!</header>
+
+<div id="game">
+    <div id="scoreBoard">Score: 0</div>
+
+    <!-- Level 1 -->
+    <div class="level active" id="level1">
+        <h2>Level 1: Warm-Up!</h2>
+        <p>Copy the text below:</p>
+        <div class="practice-box" id="copyText1">
+            <strong>I can learn new skills!</strong>
+        </div>
+
+        <p>Paste it here:</p>
+        <textarea id="paste1" rows="3"></textarea>
+        <button onclick="checkLevel(1)">Submit</button>
+        <div class="mascot" id="message1"></div>
+    </div>
+
+    <!-- Level 2 -->
+    <div class="level" id="level2">
+        <h2>Level 2: You're Getting Stronger!</h2>
+        <p>Copy the text below:</p>
+        <div class="practice-box" id="copyText2">
+            <strong>Copy and paste power activated!</strong>
+        </div>
+        <p>Paste it here:</p>
+        <textarea id="paste2" rows="3"></textarea>
+        <button onclick="checkLevel(2)">Submit</button>
+        <div class="mascot" id="message2"></div>
+    </div>
+
+    <!-- Level 3 -->
+    <div class="level" id="level3">
+        <h2>Level 3: Final Challenge!</h2>
+        <p>Copy the text below:</p>
+        <div class="practice-box" id="copyText3">
+            <strong>I’m a copy-and-paste champion!</strong>
+        </div>
+        <p>Paste it here:</p>
+        <textarea id="paste3" rows="3"></textarea>
+        <button onclick="checkLevel(3)">Submit</button>
+        <div class="mascot" id="message3"></div>
+    </div>
+
+    <!-- Game Finished -->
+    <div class="level" id="finished">
+        <h2>🎉 You Finished the Game! 🎉</h2>
+        <p>You completed all the levels. You're officially a Copy & Paste Master!</p>
+        <p class="mascot">🏆 Great job! Keep practicing your skills.</p>
+        <button onclick="resetGame()">🔄 Play Again</button>
+    </div>
+</div>
+
+<script>
+    let score = 0;
+
+    // Detect pasting
+    let pasted = {
+        1: false,
+        2: false,
+        3: false
+    };
+
+    function enablePasteDetection(level) {
+        const area = document.getElementById(`paste${level}`);
+        area.addEventListener("paste", () => {
+            pasted[level] = true;  
+        });
+    }
+
+    enablePasteDetection(1);
+    enablePasteDetection(2);
+    enablePasteDetection(3);
+
+    function checkLevel(level) {
+        const copyText = document.getElementById(`copyText${level}`).innerText.trim();
+        const pasteText = document.getElementById(`paste${level}`).value.trim();
+        const message = document.getElementById(`message${level}`);
+
+        // Check if paste was used
+        if (!pasted[level]) {
+            message.innerHTML = "⚠️ You typed it — try using COPY & PASTE so you can complete the level!";
+            return;
+        }
+
+        // Check correctness
+        if (pasteText.includes(copyText)) {
+            score += 10;
+            document.getElementById("scoreBoard").innerText = "Score: " + score;
+            message.innerHTML = "🎉 Great job! Moving to the next level...";
+
+            setTimeout(() => {
+                document.getElementById(`level${level}`).classList.remove("active");
+
+                if (level < 3) {
+                    document.getElementById(`level${level + 1}`).classList.add("active");
+                } else {
+                    document.getElementById("finished").classList.add("active");
+                }
+            }, 1200);
+
+        } else {
+            message.innerHTML = "❌ That doesn't match. Try copying again!";
+        }
+    }
+
+    function resetGame() {
+        score = 0;
+        document.getElementById("scoreBoard").innerText = "Score: 0";
+
+        // Reset paste detection
+        pasted = {1:false, 2:false, 3:false};
+
+        // Clear all text areas & messages
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById(`paste${i}`).value = "";
+            document.getElementById(`message${i}`).innerHTML = "";
+        }
+
+        // Hide all levels
+        document.querySelectorAll(".level").forEach(level => level.classList.remove("active"));
+
+        // Show level 1 again
+        document.getElementById("level1").classList.add("active");
+    }
+</script>
+
+</body>
+</html>
+
